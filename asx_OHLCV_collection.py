@@ -17,10 +17,10 @@ def create_asx50_df(start_date = date.today().isoformat(), end_date = None) -> p
     return raw_asx50_OHLCV_df
 
 def save_df_to_file(file_name: str, df: pd.DataFrame) -> None:
-
-    # Manipulate DF so values are vertically not horizontally for more effective storage
-    stacked_df = df.stack(level= [0, 1], future_stack=True).reset_index()
-    stacked_df.columns = ['Date', 'Ticker', 'Price', 'Value']
+    stacked_df = df.stack(level=0, future_stack=True).reset_index()
+    stacked_df.columns.name = None
+    stacked_df.columns = ['Date', 'Ticker', 'Open', 'High', 'Low', 'Close', 'Volume']
+    stacked_df['Date'] = pd.to_datetime(stacked_df['Date'])
     file_exists = True
 
     try:
@@ -30,11 +30,11 @@ def save_df_to_file(file_name: str, df: pd.DataFrame) -> None:
         file_exists = False
 
     if file_exists:
-        stacked_df = pd.concat([curr_df, stacked_df], ignore_index=True)
+        stacked_df = pd.concat([curr_df, stacked_df], ignore_index=True, keep="last")
 
 
     stacked_df.drop_duplicates(inplace=True)
-    stacked_df.sort_values(['Date'], inplace=True, ignore_index=True)
+    stacked_df.sort_values(['Ticker','Date'], inplace=True, ignore_index=True)
     stacked_df.dropna(inplace=True, ignore_index=True)
 
     stacked_df.to_parquet(path=file_name, engine="pyarrow", index=False)
