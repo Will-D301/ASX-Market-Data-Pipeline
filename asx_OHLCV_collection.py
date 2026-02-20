@@ -56,6 +56,3 @@ def open_OHLCV_data(file_name: str) -> pd.DataFrame:
         df = create_asx50_df(start_date = "2000-01-01")
         return reformat_OHLCV_df(df)
 
-#save_df_to_file(PATH)
-
-print(open_OHLCV_data(PATH))
