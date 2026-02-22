@@ -60,4 +60,3 @@ def open_OHLCV_data(file_name: str) -> pd.DataFrame:
         return reformat_OHLCV_df(df)
 
 
-save_df_to_file(PATH)
