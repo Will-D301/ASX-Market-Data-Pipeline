@@ -2,3 +2,4 @@ __pycache__/
 asx_50_OHLCV_data.parquet
 test.ipynb
 .ipynb_checkpoints/
+feature_data.parquet
