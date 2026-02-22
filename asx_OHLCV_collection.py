@@ -44,7 +44,10 @@ def save_df_to_file(file_name: str) -> None:
     joined_data.sort_values(["Ticker","Date"], inplace=True, ignore_index=True)
     joined_data.dropna(subset=["Open","High","Low","Close"], inplace=True, ignore_index=True)
 
+
     joined_data.to_parquet(path=file_name, engine="pyarrow", index=False)
+
+
 
 def open_OHLCV_data(file_name: str) -> pd.DataFrame:
     try:
@@ -56,3 +59,5 @@ def open_OHLCV_data(file_name: str) -> pd.DataFrame:
         df = create_asx50_df(start_date = "2000-01-01")
         return reformat_OHLCV_df(df)
 
+
+save_df_to_file(PATH)
