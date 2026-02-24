@@ -4,7 +4,7 @@ from asx_data_name_collection import get_names_from_etf
 from datetime import date
 
 raw_names = get_names_from_etf()
-PATH = "asx_50_OHLCV_data.parquet"
+PATH = "ohlcv_data.parquet"
 
 
 def reformat_OHLCV_df(df: pd.DataFrame) -> pd.DataFrame:

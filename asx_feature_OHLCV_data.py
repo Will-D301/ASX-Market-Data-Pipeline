@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from asx_OHLCV_collection import open_OHLCV_data
 
-OHLCV_PATH = "asx_50_OHLCV_data.parquet"
+OHLCV_PATH = "ohlcv_data.parquet"
 FEATURE_PATH = "feature_data.parquet"
 
 def open_feature_data(file_name=FEATURE_PATH) -> pd.DataFrame:
