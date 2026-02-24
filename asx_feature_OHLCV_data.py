@@ -5,7 +5,7 @@ from asx_OHLCV_collection import open_OHLCV_data
 OHLCV_PATH = "asx_50_OHLCV_data.parquet"
 FEATURE_PATH = "feature_data.parquet"
 
-def open_feature_data(file_name: str) -> pd.DataFrame:
+def open_feature_data(file_name=FEATURE_PATH) -> pd.DataFrame:
     try:
         df = pd.read_parquet(path=file_name, engine="pyarrow")
         df["Date"] = pd.to_datetime(df["Date"])
@@ -52,7 +52,8 @@ def create_feature_data_df(df: pd.DataFrame) -> pd.DataFrame:
         "vol_z_20d": pd.Series(index=df.index, dtype="float64"),
 
         "dow": pd.Series(index=df.index, dtype="Int8"),
-        "month": pd.Series(index=df.index, dtype="Int8"),
+
+        "tradeable": pd.Series(index=df.index, dtype="bool"),
     })
 
     # returns (Adj Close)
@@ -105,6 +106,9 @@ def create_feature_data_df(df: pd.DataFrame) -> pd.DataFrame:
 
     # calendar
     feature_df["dow"] = df["Date"].dt.dayofweek.astype("Int8")
+
+    # Tradeable if volume > 0 (At least one trade was made)
+    feature_df["tradeable"] = df["Volume"].gt(0)
 
     return feature_df
 
