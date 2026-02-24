@@ -4,7 +4,7 @@ from asx_data_name_collection import get_names_from_etf
 from datetime import date
 
 raw_names = get_names_from_etf()
-PATH = "asx_50_OHLCV_data.parquet"
+PATH = "ohlcv_data.parquet"
 
 
 def reformat_OHLCV_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -26,7 +26,7 @@ def create_asx50_df(start_date = date.today().isoformat(), end_date = None) -> p
         )
 
     if raw_asx50_OHLCV_df is None or raw_asx50_OHLCV_df.empty:
-        print("No new data returned. Most likely rate limited by yfinance")
+        print("\nNo new data returned. Most likely rate limited by yfinance")
         quit()
 
 
