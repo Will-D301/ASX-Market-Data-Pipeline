@@ -32,7 +32,7 @@ def create_asx50_df(start_date = date.today().isoformat(), end_date = None) -> p
 
     return raw_asx50_OHLCV_df
 
-def save_df_to_file(file_name: str) -> None:
+def save_ohlcv_data(file_name=PATH) -> None:
     df = open_OHLCV_data(file_name)
 
     new_data = create_asx50_df(df["Date"].max().date())
@@ -49,7 +49,7 @@ def save_df_to_file(file_name: str) -> None:
 
 
 
-def open_OHLCV_data(file_name: str) -> pd.DataFrame:
+def open_OHLCV_data(file_name=PATH) -> pd.DataFrame:
     try:
         df = pd.read_parquet(path=file_name, engine="pyarrow")
         df["Date"] = pd.to_datetime(df["Date"])
