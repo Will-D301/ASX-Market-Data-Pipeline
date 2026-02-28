@@ -1,7 +1,7 @@
 __pycache__/
-ohlcv_data.parquet
+src/data_storage/ohlcv_data.parquet
 test.ipynb
 .ipynb_checkpoints/
-feature_data.parquet
+src/data_storage/feature_data.parquet
 .idea/
-market.db
+src/data_storage/market.db

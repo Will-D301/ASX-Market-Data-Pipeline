@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
-from asx_OHLCV_collection import open_OHLCV_data
-
-OHLCV_PATH = "ohlcv_data.parquet"
-FEATURE_PATH = "feature_data.parquet"
+from src.data_collection.asx_OHLCV_collection import open_ohlcv_data
+from src.config import OHLCV_PATH, FEATURE_PATH
 
 def open_feature_data(file_name=FEATURE_PATH) -> pd.DataFrame:
     try:
@@ -12,7 +10,7 @@ def open_feature_data(file_name=FEATURE_PATH) -> pd.DataFrame:
         return df
 
     except FileNotFoundError:
-        return create_feature_data_df(open_OHLCV_data(OHLCV_PATH))
+        return create_feature_data_df(open_ohlcv_data(OHLCV_PATH))
 
 
 def create_feature_data_df(df: pd.DataFrame) -> pd.DataFrame:
