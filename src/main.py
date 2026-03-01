@@ -1,7 +1,8 @@
-from data_collection.asx_data_name_collection import get_names_from_etf
-from data_collection.asx_OHLCV_collection import save_ohlcv_data, open_ohlcv_data
-from data_collection.asx_feature_OHLCV_data import save_feature_data
-from data_collection import duckdb_collection
+from src.AdjOpen_probability.predict import compute_adj_open, compute_prob_gapup
+from src.data_collection.asx_data_name_collection import get_names_from_etf
+from src.data_collection.asx_OHLCV_collection import save_ohlcv_data, open_ohlcv_data
+from src.data_collection.asx_feature_OHLCV_data import save_feature_data
+from src.data_collection import duckdb_collection
 
 
 def main() -> None:
@@ -12,6 +13,8 @@ def main() -> None:
     save_feature_data(ohlcv_data)
     con = duckdb_collection.connect()
     duckdb_collection.init_all_views(con)
+    compute_adj_open(con, "2010-01-01", "2020-12-31")
+    compute_prob_gapup(con)
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from data_collection.asx_OHLCV_collection import open_ohlcv_data
-from config import OHLCV_PATH, FEATURE_PATH
+from src.data_collection.asx_OHLCV_collection import open_ohlcv_data
+from src.config import OHLCV_PATH, FEATURE_PATH
 
 def open_feature_data(file_name=FEATURE_PATH) -> pd.DataFrame:
     try:
