@@ -1,24 +1,21 @@
 import duckdb
-import pandas as pd
-
-OHLCV_PARQUET_PATH = "ohlcv_data.parquet"
-FEATURE_PARQUET_PATH = "feature_data.parquet"
+from config import OHLCV_PATH, FEATURE_PATH, DUCKDB_PATH
 
 def connect() -> duckdb.DuckDBPyConnection:
-    return duckdb.connect("market.db")
+    return duckdb.connect(DUCKDB_PATH)
 
-def init_all_views(con: duckdb.DuckDBPyConnection, ohlcv_parquet=OHLCV_PARQUET_PATH, feature_parquet=FEATURE_PARQUET_PATH):
+def init_all_views(con: duckdb.DuckDBPyConnection, ohlcv_path=OHLCV_PATH, feature_path=FEATURE_PATH):
     # Creates ohlcv data view
     con.execute(f""" 
             CREATE OR REPLACE VIEW ohlcv AS
-            SELECT * FROM read_parquet('{ohlcv_parquet}');
+            SELECT * FROM read_parquet('{ohlcv_path}');
         """)
 
     # Creates feature data view
     con.execute(f"""
             CREATE OR REPLACE VIEW features AS
             SELECT * 
-            FROM read_parquet('{feature_parquet}'); 
+            FROM read_parquet('{feature_path}'); 
         """)
 
     # Joins both views so each company on a date has all information

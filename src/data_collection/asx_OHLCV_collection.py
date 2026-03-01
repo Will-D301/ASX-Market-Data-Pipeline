@@ -1,10 +1,8 @@
 import yfinance as yf
 import pandas as pd
-from asx_data_name_collection import get_names_from_etf
 from datetime import date
-
-raw_names = get_names_from_etf()
-PATH = "ohlcv_data.parquet"
+from config import OHLCV_PATH, BASE_DIR
+from pathlib import Path
 
 
 def reformat_OHLCV_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -16,9 +14,9 @@ def reformat_OHLCV_df(df: pd.DataFrame) -> pd.DataFrame:
     return stacked_df
 
 
-def create_asx50_df(start_date = date.today().isoformat(), end_date = None) -> pd.DataFrame:
+def create_asx50_df(ticker_names, start_date = date.today().isoformat(), end_date = None) -> pd.DataFrame:
     raw_asx50_OHLCV_df = yf.download(
-        tickers=raw_names,
+        tickers=ticker_names,
         start=start_date,
         end=end_date,
         group_by="ticker",
@@ -32,10 +30,10 @@ def create_asx50_df(start_date = date.today().isoformat(), end_date = None) -> p
 
     return raw_asx50_OHLCV_df
 
-def save_df_to_file(file_name: str) -> None:
-    df = open_OHLCV_data(file_name)
+def save_ohlcv_data(ticker_names, file_name=OHLCV_PATH) -> None:
+    df = open_ohlcv_data(ticker_names, file_name)
 
-    new_data = create_asx50_df(df["Date"].max().date())
+    new_data = create_asx50_df(ticker_names, start_date=df["Date"].max().date())
     new_data = reformat_OHLCV_df(new_data)
 
     joined_data = pd.concat([df, new_data], ignore_index=True)
@@ -49,14 +47,15 @@ def save_df_to_file(file_name: str) -> None:
 
 
 
-def open_OHLCV_data(file_name: str) -> pd.DataFrame:
+def open_ohlcv_data(ticker_names, file_name=OHLCV_PATH) -> pd.DataFrame:
+    Path(BASE_DIR / "data").mkdir(parents=True, exist_ok=True)
     try:
         df = pd.read_parquet(path=file_name, engine="pyarrow")
         df["Date"] = pd.to_datetime(df["Date"])
         return df
 
     except FileNotFoundError:
-        df = create_asx50_df(start_date = "2000-01-01")
+        df = create_asx50_df(ticker_names, start_date="2000-01-01")
         return reformat_OHLCV_df(df)
 
 
