@@ -9,5 +9,6 @@ FEATURE_PATH = BASE_DIR / "data/feature_data.parquet"
 DUCKDB_PATH = BASE_DIR / "data/market.db"
 
 OHLCV_WITH_ADJ_PATH = BASE_DIR / "data/ohlcv_with_adj_data.parquet"
-BACK_TEST_DATA_PATH = BASE_DIR / "data/back_test_data.parquet"
 PROB_DATA_PATH = BASE_DIR / "data/prob_data.parquet"
+PREDICTION_PROB_DATA_PATH = BASE_DIR / "data/prediction_prob_data.parquet"
+BACK_TEST_DATA_PATH = BASE_DIR / "data/back_test_data.parquet"

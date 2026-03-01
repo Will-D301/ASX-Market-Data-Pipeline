@@ -1,6 +1,6 @@
 import pandas as pd
 import duckdb
-from src.config import OHLCV_WITH_ADJ_PATH, BACK_TEST_DATA_PATH
+from src.config import OHLCV_WITH_ADJ_PATH, PROB_DATA_PATH
 
 def compute_adj_open(con: duckdb.DuckDBPyConnection, start_date: str, end_date: str) -> None:
     con.execute(f"""
@@ -57,10 +57,10 @@ def compute_prob_gapup(con: duckdb.DuckDBPyConnection) -> None:
             (adj_open_est_next / adj_close) - 1 AS gap_ret_next_open
         FROM adj_open_next_data
         ORDER BY Ticker, Date
-        ) TO '{BACK_TEST_DATA_PATH}'
+        ) TO '{PROB_DATA_PATH}'
         (FORMAT parquet);
     """)
 
 
-def open_backtest_data(path=BACK_TEST_DATA_PATH) -> pd.DataFrame:
+def open_prob_data(path=PROB_DATA_PATH) -> pd.DataFrame:
     return pd.read_parquet(path, engine='pyarrow')
