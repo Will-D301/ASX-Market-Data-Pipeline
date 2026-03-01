@@ -1,6 +1,5 @@
 import pandas as pd
 import duckdb
-from src.data_collection.duckdb_collection import connect
 from src.config import OHLCV_WITH_ADJ_PATH, BACK_TEST_DATA_PATH
 
 def compute_adj_open(con: duckdb.DuckDBPyConnection, start_date: str, end_date: str) -> None:
@@ -61,4 +60,7 @@ def compute_prob_gapup(con: duckdb.DuckDBPyConnection) -> None:
         ) TO '{BACK_TEST_DATA_PATH}'
         (FORMAT parquet);
     """)
-con = connect()
+
+
+def open_backtest_data(path=BACK_TEST_DATA_PATH) -> pd.DataFrame:
+    return pd.read_parquet(path, engine='pyarrow')
