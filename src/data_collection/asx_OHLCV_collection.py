@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 from datetime import date
-from src.config import OHLCV_PATH
+from config import OHLCV_PATH
 
 def reformat_OHLCV_df(df: pd.DataFrame) -> pd.DataFrame:
     stacked_df = df.stack(level=0, future_stack=True).reset_index()

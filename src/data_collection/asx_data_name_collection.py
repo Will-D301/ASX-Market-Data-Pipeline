@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 import io
-from src.config import ASX_50_ETF_EXCEL_LINK
+from config import ASX_50_ETF_EXCEL_LINK
 
 def get_names_from_etf() -> list[str]:
     raw_content = requests.get(ASX_50_ETF_EXCEL_LINK, timeout = 100).content

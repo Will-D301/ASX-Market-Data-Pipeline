@@ -1,7 +1,10 @@
-from src.data_collection.asx_data_name_collection import get_names_from_etf
-from src.data_collection.asx_OHLCV_collection import save_ohlcv_data, open_ohlcv_data
-from src.data_collection.asx_feature_OHLCV_data import save_feature_data
-from src.data_collection import duckdb_collection
+from pathlib import Path
+from data_collection.asx_data_name_collection import get_names_from_etf
+from data_collection.asx_OHLCV_collection import save_ohlcv_data, open_ohlcv_data
+from data_collection.asx_feature_OHLCV_data import save_feature_data
+from data_collection import duckdb_collection
+
+Path("../data").mkdir(parents=True, exist_ok=True)
 
 def main() -> None:
 
