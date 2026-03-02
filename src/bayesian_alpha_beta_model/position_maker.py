@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import duckdb
-from src.config import BACK_TEST_DATA_PATH
+from src.config import DATA_PATH
 
 def make_positions(prob_data: pd.DataFrame, short_value: float, long_value: float) -> np.ndarray:
     prob_data_cp = prob_data.copy().reset_index(drop=True)
@@ -25,15 +25,18 @@ def back_test(prob_data: pd.DataFrame, short_value: float, long_value: float, st
 
     cost = bps_cost / 10000
 
-    prob_data_cp["cost"] = np.abs(prob_data_cp["pos"]) * 2 * cost
+    change = prob_data_cp.groupby("Ticker")["pos"].diff().fillna(prob_data_cp["pos"])
+    trades = np.abs(change).clip(0, 2)
+    prob_data_cp["cost"] = trades * cost
     prob_data_cp["strategy_ret"] = prob_data_cp["pos"] * prob_data_cp["gap_ret_next_open"] - prob_data_cp["cost"]
     prob_data_cp["equity"] = start_equity * (1 + prob_data_cp["strategy_ret"]).groupby(prob_data_cp["Ticker"]).cumprod()
     prob_data_cp["pct_return"] = ((prob_data_cp["equity"] / start_equity) - 1) * 100
 
+    prob_data_cp = prob_data_cp[['Ticker', 'Date', 'cost','strategy_ret', 'equity', 'pct_return']]
     return prob_data_cp
 
 def save_back_test(prob_data: pd.DataFrame, con: duckdb.DuckDBPyConnection, name: str,
-                   path=BACK_TEST_DATA_PATH):
+                   path=DATA_PATH):
     file_path = path / f"{name}.parquet"
     prob_data.to_parquet(file_path, engine='pyarrow', index=False)
     con.execute(f"""
@@ -42,8 +45,7 @@ def save_back_test(prob_data: pd.DataFrame, con: duckdb.DuckDBPyConnection, name
     FROM read_parquet('{file_path}')
     """)
 
-def open_back_test(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
-    return con.execute(f"""
-                    SELECT *
-                    FROM back_test  
-                    """).df()
+def open_back_test(path: str, name: str) -> pd.DataFrame:
+    df = pd.read_parquet(path / f"{name}.parquet")
+    df["Date"] = pd.to_datetime(df["Date"])
+    return df

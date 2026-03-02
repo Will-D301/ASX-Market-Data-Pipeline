@@ -32,21 +32,13 @@ def compute_prob_gapup(con: duckdb.DuckDBPyConnection, adj_view_name="ohlcv_with
             WINDOW w AS (PARTITION BY Ticker ORDER BY Date)
         )
         SELECT
-            Date,
-            Ticker,
-            adj_close,
-            adj_open_est,
-            adj_open_est_next,
-            CASE
-                WHEN adj_open_est_next > adj_close THEN 1
-                ELSE 0
-            END AS gap_up_on_open,
-            CASE
-                WHEN adj_close > adj_close_prev THEN 1
-                ELSE 0
-            END AS ret_up_t,
-            (adj_open_est_next / adj_close) - 1 AS gap_ret_next_open
-        FROM adj_open_next_data;
+            m.*,  -- everything from market (or whatever table/view holds your “prob data” columns)
+            CASE WHEN aon.adj_open_est_next > aon.adj_close THEN 1 ELSE 0 END AS gap_up_on_open,
+            CASE WHEN aon.adj_close > aon.adj_close_prev THEN 1 ELSE 0 END AS ret_up_t,
+            (aon.adj_open_est_next / aon.adj_close) - 1 AS gap_ret_next_open
+        FROM adj_open_next_data aon
+        JOIN market m
+          ON m.Date = aon.Date AND m.Ticker = aon.Ticker;
     """)
 
 def open_prob_data(con) -> pd.DataFrame:
