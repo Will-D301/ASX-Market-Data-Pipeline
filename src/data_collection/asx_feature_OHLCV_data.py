@@ -45,13 +45,7 @@ def create_feature_data_df(df: pd.DataFrame) -> pd.DataFrame:
         "gap": pd.Series(index=df.index, dtype="float64"),
         "ret_oc": pd.Series(index=df.index, dtype="float64"),
 
-        "dollar_vol": pd.Series(index=df.index, dtype="float64"),
         "dollar_vol_20d": pd.Series(index=df.index, dtype="float64"),
-        "vol_z_20d": pd.Series(index=df.index, dtype="float64"),
-
-        "dow": pd.Series(index=df.index, dtype="Int8"),
-
-        "tradeable": pd.Series(index=df.index, dtype="bool"),
     })
 
     # returns (Adj Close)
@@ -93,20 +87,11 @@ def create_feature_data_df(df: pd.DataFrame) -> pd.DataFrame:
     feature_df["ret_oc"] = df["Close"] / df["Open"] - 1
 
     # liquidity / volume
-    feature_df["dollar_vol"] = df[px] * df["Volume"]
-
     feature_df["dollar_vol_20d"] = feature_df["dollar_vol"].groupby(df["Ticker"]).rolling(20).mean().reset_index(level=0, drop=True)
 
 
     vol_mean = df["Volume"].groupby(df["Ticker"]).rolling(20).mean().reset_index(level=0, drop=True)
     vol_std = df["Volume"].groupby(df["Ticker"]).rolling(20).std().reset_index(level=0, drop=True)
-    feature_df["vol_z_20d"] = (df["Volume"] - vol_mean) / vol_std.replace(0, np.nan)
-
-    # calendar
-    feature_df["dow"] = df["Date"].dt.dayofweek.astype("Int8")
-
-    # Tradeable if volume > 0 (At least one trade was made)
-    feature_df["tradeable"] = df["Volume"].gt(0)
 
     return feature_df
 
