@@ -1,46 +1,35 @@
 import pandas as pd
 import duckdb
-from src.config import OHLCV_WITH_ADJ_PATH, PROB_DATA_PATH
 
-def compute_adj_open(con: duckdb.DuckDBPyConnection, start_date: str, end_date: str) -> None:
+def compute_adj_open(con: duckdb.DuckDBPyConnection, start_date: str, end_date: str,) -> None:
     con.execute(f"""
-    COPY(
+        CREATE OR REPLACE VIEW ohlcv_with_adj AS
         SELECT
-          Date,
-          Ticker,
-          "Open",
-          "Close",
-          "Adj Close" / NULLIF("Close", 0) AS adj_factor,
-          "Open" * ("Adj Close" / NULLIF("Close", 0)) AS adj_open_est,
-          "Adj Close" as adj_close
-        FROM ohlcv 
-        WHERE Date >= '{start_date}' AND Date <= '{end_date}'
-        ORDER BY Ticker, Date
-    ) TO '{OHLCV_WITH_ADJ_PATH}'
-    (FORMAT parquet);
+            Date,
+            Ticker,
+            "Open",
+            "Close",
+            "Adj Close" / "Close" AS adj_factor,
+            "Open" * ("Adj Close" / "Close") AS adj_open_est,
+            "Adj Close" AS adj_close
+        FROM ohlcv
+        WHERE Date >= '{start_date}' AND Date <= '{end_date}';
     """)
 
-def compute_prob_gapup(con: duckdb.DuckDBPyConnection) -> None:
+
+def compute_prob_gapup(con: duckdb.DuckDBPyConnection, adj_view_name="ohlcv_with_adj",) -> None:
     con.execute(f"""
-    COPY(
-        WITH adj_open_next_data  AS (
+        CREATE OR REPLACE VIEW prob_data AS
+        WITH adj_open_next_data AS (
             SELECT
                 Date,
                 Ticker,
                 adj_open_est,
                 adj_close,
-                LAG(adj_close) OVER (PARTITION BY Ticker ORDER BY Date) AS adj_close_prev,
-                    CASE
-                        WHEN adj_close > LAG(adj_close) 
-                        OVER (PARTITION BY Ticker ORDER BY Date) 
-                        THEN 1 
-                        ELSE 0
-                END AS ret_up_t,
-                LEAD(adj_open_est) OVER (
-                    PARTITION BY Ticker
-                    ORDER BY Date
-                ) AS adj_open_est_next
-            FROM read_parquet('{OHLCV_WITH_ADJ_PATH}')
+                LAG(adj_close) OVER w AS adj_close_prev,
+                LEAD(adj_open_est) OVER w AS adj_open_est_next
+            FROM {adj_view_name}
+            WINDOW w AS (PARTITION BY Ticker ORDER BY Date)
         )
         SELECT
             Date,
@@ -48,19 +37,20 @@ def compute_prob_gapup(con: duckdb.DuckDBPyConnection) -> None:
             adj_close,
             adj_open_est,
             adj_open_est_next,
-            CASE 
-                WHEN adj_open_est_next > adj_close
-                THEN 1 
-                ELSE 0 
+            CASE
+                WHEN adj_open_est_next > adj_close THEN 1
+                ELSE 0
             END AS gap_up_on_open,
-            ret_up_t,
+            CASE
+                WHEN adj_close > adj_close_prev THEN 1
+                ELSE 0
+            END AS ret_up_t,
             (adj_open_est_next / adj_close) - 1 AS gap_ret_next_open
-        FROM adj_open_next_data
-        ORDER BY Ticker, Date
-        ) TO '{PROB_DATA_PATH}'
-        (FORMAT parquet);
+        FROM adj_open_next_data;
     """)
 
-
-def open_prob_data(path=PROB_DATA_PATH) -> pd.DataFrame:
-    return pd.read_parquet(path, engine='pyarrow')
+def open_prob_data(con) -> pd.DataFrame:
+    return con.execute(f"""
+                       SELECT *
+                       FROM prob_data
+                       """).df()

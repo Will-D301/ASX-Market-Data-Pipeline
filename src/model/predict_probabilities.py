@@ -1,8 +1,9 @@
 import pandas as pd
-from src.config import PREDICTION_PROB_DATA_PATH
+import duckdb
 
 
-def compute_probabilities(back_test_data: pd.DataFrame, alpha0=1, beta0=1) -> pd.DataFrame:
+def compute_probabilities(back_test_data: pd.DataFrame, con: duckdb.DuckDBPyConnection,
+                          alpha0=1, beta0=1) -> pd.DataFrame:
     back_test_data_cp = back_test_data.copy()
     back_test_data_cp.dropna(inplace=True, how='any')
     back_test_data_cp = back_test_data_cp.sort_values(by=['Date', 'Ticker']).reset_index(drop=True)
@@ -28,10 +29,16 @@ def compute_probabilities(back_test_data: pd.DataFrame, alpha0=1, beta0=1) -> pd
                 beta[ret_up_t] += 1.0
 
     prob_df['p_hat'] = p_hat
-    return prob_df
 
-def save_prob_data(prob_df: pd.DataFrame, path=PREDICTION_PROB_DATA_PATH) -> None:
-    prob_df.to_parquet(path, engine='pyarrow', index=False)
+    con.register("p_hat_tmp", prob_df)
+    con.execute("""
+        CREATE OR REPLACE TABLE pred_prob AS
+        SELECT *
+        FROM p_hat_tmp
+    """)
 
-def open_prob_data(path=PREDICTION_PROB_DATA_PATH) -> pd.DataFrame:
-    return pd.read_parquet(path, engine='pyarrow')
+def open_pred_prob_data(con: duckdb.DuckDBPyConnection):
+    return con.execute("""
+                       SELECT * 
+                       FROM pred_prob
+                       """).df()
