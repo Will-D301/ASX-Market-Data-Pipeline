@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 from datetime import date
-from config import OHLCV_PATH, BASE_DIR
+from src.config import OHLCV_PATH, BASE_DIR
 from pathlib import Path
 
 

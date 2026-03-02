@@ -1,5 +1,5 @@
 import duckdb
-from config import OHLCV_PATH, FEATURE_PATH, DUCKDB_PATH
+from src.config import OHLCV_PATH, FEATURE_PATH, DUCKDB_PATH
 
 def connect() -> duckdb.DuckDBPyConnection:
     return duckdb.connect(DUCKDB_PATH)
