@@ -3,7 +3,8 @@ from pathlib import Path
 ASX_50_ETF_EXCEL_LINK = "https://www.ssga.com/au/en_gb/intermediary/library-content/products/fund-data/etfs/apac/holdings-daily-au-en-sfy.xlsx"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR / "data/"
+BAYESIAN_DATA_PATH = BASE_DIR / "data/bayesian_back_test"
+LOGISTIC_REGRESSION_DATA_PATH = BASE_DIR / "data/logistic_regression_data"
 
 OHLCV_PATH = BASE_DIR / "data/ohlcv_data.parquet"
 FEATURE_PATH = BASE_DIR / "data/feature_data.parquet"

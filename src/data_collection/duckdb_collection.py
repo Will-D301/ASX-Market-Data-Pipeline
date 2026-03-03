@@ -1,4 +1,5 @@
 import duckdb
+import pandas as pd
 from src.config import OHLCV_PATH, FEATURE_PATH, DUCKDB_PATH
 
 def connect() -> duckdb.DuckDBPyConnection:
@@ -26,3 +27,9 @@ def init_all_views(con: duckdb.DuckDBPyConnection, ohlcv_path=OHLCV_PATH, featur
         JOIN features f USING (Date, Ticker); 
         """)
 
+def join_feature_prob_data(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
+    return con.execute(f"""
+        SELECT f.*, p.gap_up_on_open, p.gap_ret_next_open
+        FROM features f
+        JOIN pred_prob p USING (Date, Ticker)
+    """).df()

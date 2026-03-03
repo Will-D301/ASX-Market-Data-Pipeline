@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import duckdb
-from src.config import DATA_PATH
 
 def make_positions(prob_data: pd.DataFrame, short_value: float, long_value: float) -> np.ndarray:
     prob_data_cp = prob_data.copy().reset_index(drop=True)
@@ -18,7 +17,7 @@ def make_positions(prob_data: pd.DataFrame, short_value: float, long_value: floa
 
     return positions
 
-def back_test(prob_data: pd.DataFrame, short_value: float, long_value: float, start_equity=100, bps_cost=5)-> pd.DataFrame:
+def bayesian_back_test(prob_data: pd.DataFrame, short_value: float, long_value: float, start_equity=100, bps_cost=5)-> pd.DataFrame:
     prob_data_cp = prob_data.copy().sort_values(["Ticker", "Date"]).reset_index(drop=True)
 
     prob_data_cp["pos"] = make_positions(prob_data_cp, short_value, long_value)
@@ -36,7 +35,8 @@ def back_test(prob_data: pd.DataFrame, short_value: float, long_value: float, st
     return prob_data_cp
 
 def save_back_test(prob_data: pd.DataFrame, con: duckdb.DuckDBPyConnection, name: str,
-                   path=DATA_PATH):
+                   path):
+    path.mkdir(parents=True, exist_ok=True)
     file_path = path / f"{name}.parquet"
     prob_data.to_parquet(file_path, engine='pyarrow', index=False)
     con.execute(f"""

@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 from datetime import date
-from src.config import OHLCV_PATH, BASE_DIR
+from src.config import OHLCV_PATH, BASE_DIR, BAYESIAN_DATA_PATH, LOGISTIC_REGRESSION_DATA_PATH
 from pathlib import Path
 
 
@@ -49,6 +49,9 @@ def save_ohlcv_data(ticker_names, file_name=OHLCV_PATH) -> None:
 
 def open_ohlcv_data(ticker_names, file_name=OHLCV_PATH) -> pd.DataFrame:
     Path(BASE_DIR / "data").mkdir(parents=True, exist_ok=True)
+    Path(BAYESIAN_DATA_PATH).mkdir(parents=True, exist_ok=True)
+    Path(LOGISTIC_REGRESSION_DATA_PATH).mkdir(parents=True, exist_ok=True)
+
     try:
         df = pd.read_parquet(path=file_name, engine="pyarrow")
         df["Date"] = pd.to_datetime(df["Date"])

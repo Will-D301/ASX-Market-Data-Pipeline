@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-from src.config import GOING_LONG_DATA_PATH, DATA_PATH
-from src.bayesian_alpha_beta_model.position_maker import open_back_test
+from src.config import GOING_LONG_DATA_PATH, BAYESIAN_DATA_PATH
+from src.models.position_maker import open_back_test
 from src.data_collection.going_long import open_going_long
 
 def merge_equity(long_df: pd.DataFrame, strat_df: pd.DataFrame) -> pd.DataFrame:
@@ -74,7 +74,7 @@ def summarise_comparison(merged: pd.DataFrame):
     return per_ticker, portfolio, summary
 
 
-def compare_backtests(backtest_name: str, backtest_dir=DATA_PATH, going_long_path=GOING_LONG_DATA_PATH,):
+def compare_backtests(backtest_name: str, backtest_dir, going_long_path=GOING_LONG_DATA_PATH, ):
     long_df = open_going_long(going_long_path)
     strat_df = open_back_test(backtest_dir, backtest_name)
     merged = merge_equity(long_df, strat_df)
@@ -83,7 +83,7 @@ def compare_backtests(backtest_name: str, backtest_dir=DATA_PATH, going_long_pat
 
 def save_comparison(
     backtest_name: str,
-    data_path = DATA_PATH,
+    data_path = BAYESIAN_DATA_PATH,
     going_long_path = GOING_LONG_DATA_PATH,
 ):
     per_ticker, portfolio, summary = compare_backtests(backtest_name, data_path, going_long_path)
