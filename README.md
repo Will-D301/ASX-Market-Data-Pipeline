@@ -2,7 +2,6 @@
 
 End-to-end workflow that downloads ASX50 OHLCV data, engineers features of this data, builds a duckdb prediction dataset, runs a simple Bayesian/backtest strategy, and compares it against a going-long baseline.
 
-
 ## Files
 Key data files are written into `data/`:
 
@@ -59,11 +58,20 @@ For every ticker we run a simple Bayesian probability update:
 ### Visualising Results
 #### Equity Comparison
 ![Equity](images/bbt_equity.png)
+#### Per Ticker Equity
+![PTE](images/bbt_per_ticker.png)
 #### Summary
 ![Summary](images/bbt_summary.png)
-
 #### Analysis
-As can be seen from the graphs the bayesian strategy performed significantly worse than the going long strategy when talking strict equity returns. The bayesian strategy produced a CAGR of 0.159 whereas the long strategy produced a CAGR of 0.296. However, there are times, often during market crashes, where the bayesian strategy outperforms the long strategy. This is due to the significantly less volatility with the bayesian strategy, something to be aware of.
+As can be seen from the graphs the bayesian strategy performed significantly worse than the going long strategy when talking strict equity returns. This is mostly due to the outlier NST.AX which completely skews the data. This outlier is removed in the next two charts to display what data would be like without it:
+
+#### Equity Comparison (Without Outlier)
+![EquityWO](images/bbt_equity_wo.png)
+#### Per Ticker Equity (Without Outlier)
+![PTEWO](images/bbt_per_ticker_wo.png)
+
+## Conclusion
+As can be seen from the graphs although the prediction strategy performs worse it is significantly less volatile and produces better results in some situations when compared to a hold long strategy.
 
 
 ## Extension
