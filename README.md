@@ -64,3 +64,7 @@ For every ticker we run a simple Bayesian probability update:
 
 #### Analysis
 As can be seen from the graphs the bayesian strategy performed significantly worse than the going long strategy when talking strict equity returns. The bayesian strategy produced a CAGR of 0.159 whereas the long strategy produced a CAGR of 0.296. However, there are times, often during market crashes, where the bayesian strategy outperforms the long strategy. This is due to the significantly less volatility with the bayesian strategy, something to be aware of.
+
+
+## Extension
+Given all the information collected this project may be extended by introducing a multitude of strategies and comparing these to see which produce the best result 
