@@ -1,10 +1,10 @@
 # ASX Market Pipeline
 
-End-to-end workflow that downloads ASX50 OHLCV data, engineers features, builds a duckdb prediction dataset, runs a simple Bayesian/backtest strategy, and compares it against a naive going-long baseline.
+End-to-end workflow that downloads ASX50 OHLCV data, engineers features of this data, builds a duckdb prediction dataset, runs a simple Bayesian/backtest strategy, and compares it against a going-long baseline.
 
 
 ## Files
-Key data files are written into `data/` by the pipeline:
+Key data files are written into `data/`:
 
 | File | Description                                                          |
 | --- |----------------------------------------------------------------------|
@@ -41,7 +41,7 @@ Key data files are written into `data/` by the pipeline:
 - `bt_4555split_summary.parquet`: aggregate metrics (portfolio-level final equity, CAGR, drawdown, mean excess return).
 
 ## Backtest Results (Bayesian Strategy vs Going Long)
-A more detailed comparison can be found in `notebooks/backtest_comparison.ipynb`
+The code for this comparison can be found in `notebooks/backtest_comparison.ipynb`
 
 ### Methodology
 Results were crafted from the market data of companies who were public from 2010-01-01 to 2020-12-31.
