@@ -13,23 +13,31 @@ start_date = '2010-01-01'
 end_date = '2020-12-31'
 
 def main() -> None:
+    # Get current raw data and save it
     raw_names = get_names_from_etf()
     save_ohlcv_data(raw_names)
+
+    # Generate feature data
     ohlcv_data = open_ohlcv_data(raw_names)
     save_feature_data(ohlcv_data)
+
+    # Initialise the duckDB database
     con = duckdb_collection.connect()
     duckdb_collection.init_all_views(con)
+
+    # Calculate probabilities
     compute_adj_open(con, start_date, end_date)
     compute_prob_gapup(con)
     prob_data = open_prob_data(con)
     prob_data = filter_tickers(prob_data, start_date, end_date)
     compute_probabilities(prob_data, con)
+
+    # Back test from 2010-2020 using calculated probabilities
     pred_prob_data = filter_tickers(open_pred_prob_data(con), start_date, end_date)
     positions = back_test(pred_prob_data, 0.45, 0.55)
     save_back_test(positions, con, "bt_4555split")
     compute_going_long(pred_prob_data)
     save_comparison("bt_4555split")
-
 
 
 if __name__ == '__main__':
