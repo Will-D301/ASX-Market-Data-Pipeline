@@ -18,7 +18,7 @@ Key data files are written into `data/`:
 
 1. **Install Dependencies**
    ```bash
-   pip install pandas numpy pyarrow duckdb yfinance seaborn matplotlib
+   pip install pandas numpy pyarrow duckdb yfinance matplotlib
    ```
 
 2. **Run the pipeline**:
@@ -43,11 +43,11 @@ Key data files are written into `data/`:
 The code for this comparison can be found in `notebooks/backtest_comparison.ipynb`
 
 ### Methodology
-Results were crafted from the market data of companies who were public from 2010-01-01 to 2020-12-31.
+Results were crafted from the market data of companies who were public from 2010-01-01 to 2020-12-31 and currently listed on the ASX50.
 Both methods had a starting equity of 100 for each company and equity was recorded and calculated every day
-The entry/exit cost was calculated to be 0.00005 basis points
+The entry/exit cost was calculated to be 0.00005 basis points per entry and exit.
 #### Going Long
-The going long method involved buying at the open price in 2010-01-01 and selling in 2020-12-31
+The going long method involved buying at the open price of each company in 2010-01-01 and selling at the close price in 2020-12-31
 #### Bayesian Strategy
 For every ticker we run a simple Bayesian probability update:
 - Two independent Beta distributions track the likelihood that the next day opens above the prior close conditional on whether the current day closed up or down. 
@@ -63,16 +63,13 @@ For every ticker we run a simple Bayesian probability update:
 #### Summary
 ![Summary](images/bbt_summary.png)
 #### Analysis
-As can be seen from the graphs the bayesian strategy performed significantly worse than the going long strategy when talking strict equity returns. This is mostly due to the outlier NST.AX which completely skews the data. This outlier is removed in the next two charts to display what data would be like without it:
+As can be seen from the graphs the bayesian strategy performed significantly worse than the going long strategy when talking strict equity returns. This is mostly due to the outlier NST.AX which completely skews the data. This outlier is removed in the next two charts to display what data would be like without it.
 
 #### Equity Comparison (Without Outlier)
 ![EquityWO](images/bbt_equity_wo.png)
-#### Per Ticker Equity (Without Outlier)
-![PTEWO](images/bbt_per_ticker_wo.png)
-
-## Conclusion
-As can be seen from the graphs although the prediction strategy performs worse it is significantly less volatile and produces better results in some situations when compared to a hold long strategy.
-
-
+#### Summary (Without Outlier)
+![SummaryWO](images/bbt_summary_wo.png)
+### Analysis of Results Without Outlier
+The without outlier graphs show a much more competitive method when looking at equity with the bayesian probability method outperforming the holding long method. The bayesian method also has significantly less volatility evident by the smaller max drawdown value.
 ## Extension
-Given all the information collected this project may be extended by introducing a multitude of strategies and comparing these to see which produce the best result 
+Given all the information collected, it has become much simpler to test new prediction models and compare these. Therefore, to extend the pipeline multiple different prediction models from different background (ML, Monte Carlo, Networks etc.) should be compared to find which is most effective.
